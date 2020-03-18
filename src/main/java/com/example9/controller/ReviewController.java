@@ -144,7 +144,7 @@ public class ReviewController {
 		review.setEvaluation(Integer.parseInt(form.getEvaluation()));
 		review.setReview(form.getReview());
 		review.setItemId(Integer.parseInt(form.getItemId()));
-		
+
 		reviewService.postReview(review);
 		flash.addFlashAttribute("itemId", form.getItemId());
 		return "redirect:/review/posted";
