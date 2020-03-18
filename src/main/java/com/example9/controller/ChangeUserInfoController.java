@@ -110,7 +110,8 @@ public class ChangeUserInfoController {
 	}
 
 	/*
-	 * ファイル名から拡張子を返す.
+	 * <<<<<<< HEAD ファイル名から拡張子を返す. ======= ファイル名から拡張子を返します. >>>>>>>
+	 * 2f205365d037c254f6d538d6eb5caf4c24c54344
 	 * 
 	 * @param originalFileName ファイル名
 	 * 
