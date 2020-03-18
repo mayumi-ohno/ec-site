@@ -2,6 +2,7 @@ package com.example9.domain;
 
 /**
  * ユーザー情報を表すドメイン.
+ * 
  * @author mayumiono
  *
  */
@@ -21,11 +22,13 @@ public class User {
 	private String address;
 	/** 電話番号 */
 	private String telephone;
+	/** アイコン画像 */
+	private String image;
 
 	@Override
 	public String toString() {
-		return "user [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", zipcode="
-				+ zipcode + ", address=" + address + ", telephone=" + telephone + "]";
+		return "User [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", zipcode="
+				+ zipcode + ", address=" + address + ", telephone=" + telephone + ", image=" + image + "]";
 	}
 
 	public Integer getId() {
@@ -82,6 +85,14 @@ public class User {
 
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 
 }

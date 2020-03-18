@@ -1,6 +1,5 @@
 package com.example9.repository;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -32,6 +31,11 @@ public class UserRepository {
 		user.setZipcode(rs.getString("zipcode"));
 		user.setAddress(rs.getString("address"));
 		user.setTelephone(rs.getString("telephone"));
+		// 画像情報取らない場合もあり
+		try {
+			user.setImage(rs.getString("image"));
+		} catch (Exception e) {
+		}
 		return user;
 	};
 
@@ -42,18 +46,20 @@ public class UserRepository {
 	 * @return ユーザー情報(該当なしの場合null)
 	 */
 	public User findByEmail(String email) {
-		String sql = "SELECT id, name, email, password, zipcode, address, telephone FROM users WHERE email=:email;";
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT A.id, A.name, A.email, A.password, A.zipcode, A.address, A.telephone, B.image ");
+		sql.append("FROM users AS A LEFT OUTER JOIN user_images AS B ON A.id=B.user_id WHERE A.email=:email;");
 		SqlParameterSource param = new MapSqlParameterSource().addValue("email", email);
 		// 該当データなしの場合、NullPointerException発生
 		try {
-			User user = template.queryForObject(sql, param, USER_ROW_MAPPER);
+			User user = template.queryForObject(sql.toString(), param, USER_ROW_MAPPER);
 			return user;
 		} catch (Exception e) {
 			return null;
 		}
 
 	}
-	
+
 	/**
 	 * ユーザ登録を行う.
 	 * 
@@ -62,10 +68,10 @@ public class UserRepository {
 	public void insert(User user) {
 		SqlParameterSource param = new BeanPropertySqlParameterSource(user);
 		String sql = "INSERT INTO users (name, email, password, zipcode, address, telephone)"
-				   + " VALUES (:name, :email, :password, :zipcode, :address, :telephone)";
+				+ " VALUES (:name, :email, :password, :zipcode, :address, :telephone)";
 		template.update(sql, param);
 	}
-	
+
 	/**
 	 * 主キーでユーザ検索を行う.
 	 * 
@@ -73,10 +79,36 @@ public class UserRepository {
 	 * @return ユーザ情報
 	 */
 	public User load(Integer id) {
-		String sql = "SELECT id, name, email, password, zipcode, address, telephone FROM users WHERE id = :id";
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT A.id, A.name, A.email, A.password, A.zipcode, A.address, A.telephone, B.image ");
+		sql.append("FROM users AS A LEFT OUTER JOIN user_images AS B ON A.id=B.user_id WHERE A.id=:id;");
 		SqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
-		User user = template.queryForObject(sql, param, USER_ROW_MAPPER);
+		User user = template.queryForObject(sql.toString(), param, USER_ROW_MAPPER);
 		return user;
+	}
+
+	/**
+	 * パスワード以外のユーザー情報の更新を行う.
+	 * 
+	 * @param user ユーザー情報
+	 */
+	public void Update(User user) {
+		StringBuilder sql = new StringBuilder();
+
+		if (user.getImage() == null) {
+			// 画像なしの場合、画像テーブルは更新しない
+			sql.append("UPDATE users SET name=:name, email=:email, zipcode=:zipcode, ");
+			sql.append("address=:address, telephone=:telephone WHERE id=:id;");
+		} else {
+			// 画像ありの場合、画像テーブルも更新
+			sql.append("WITH returning_user_id AS( ");
+			sql.append("UPDATE users SET name=:name, email=:email, zipcode=:zipcode, ");
+			sql.append("address=:address, telephone=:telephone WHERE id=:id RETURNING id) ");
+			sql.append("UPDATE user_images SET image=:image WHERE user_id IN (SELECT id FROM returning_user_id);");
+		}
+
+		SqlParameterSource param = new BeanPropertySqlParameterSource(user);
+		template.update(sql.toString(), param);
 	}
 
 }

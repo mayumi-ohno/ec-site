@@ -7,12 +7,12 @@ import javax.validation.constraints.Pattern;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * ユーザ登録への入力情報.
+ * ユーザ情報変更への入力情報.
  * 
  * @author suzukikunpei
  *
  */
-public class UserRegisterForm {
+public class ChangeUserInfoForm {
 
 	/** 名前 */
 	@NotBlank(message = "お名前を入力して下さい")
@@ -36,15 +36,6 @@ public class UserRegisterForm {
 	@NotBlank(message = "電話番号を入力して下さい")
 	@Pattern(regexp = "^[0-9]+$", message = "電話番号は数値を入力して下さい")
 	private String telephone;
-
-	/** パスワード */
-	@NotBlank(message = "パスワードを入力して下さい")
-	@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[!-~]{8,20}$", message = "パスワード形式が不正です")
-	private String password;
-
-	/** 確認用パスワード */
-	@NotBlank(message = "確認用パスワードを入力して下さい")
-	private String confirmationPassword;
 
 	/** アイコン画像 */
 	private MultipartFile image;
@@ -89,22 +80,6 @@ public class UserRegisterForm {
 		this.telephone = telephone;
 	}
 
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getConfirmationPassword() {
-		return confirmationPassword;
-	}
-
-	public void setConfirmationPassword(String confirmationPassword) {
-		this.confirmationPassword = confirmationPassword;
-	}
-
 	public MultipartFile getImage() {
 		return image;
 	}
@@ -115,9 +90,8 @@ public class UserRegisterForm {
 
 	@Override
 	public String toString() {
-		return "UserRegisterForm [name=" + name + ", email=" + email + ", zipcode=" + zipcode + ", address=" + address
-				+ ", telephone=" + telephone + ", password=" + password + ", confirmationPassword="
-				+ confirmationPassword + ", image=" + image + "]";
+		return "ChangeUserInfoForm [name=" + name + ", email=" + email + ", zipcode=" + zipcode + ", address=" + address
+				+ ", telephone=" + telephone + ", image=" + image + "]";
 	}
 
 }
