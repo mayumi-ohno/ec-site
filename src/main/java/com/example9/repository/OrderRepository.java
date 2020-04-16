@@ -193,11 +193,11 @@ public class OrderRepository {
 
 		SqlParameterSource param = null;
 		if (minDate == null || maxDate == null) {
-			sql.append("ORDER BY A.id DESC;");
+			sql.append("ORDER BY A.id DESC,  F.order_item_id DESC;");
 			param = new MapSqlParameterSource().addValue("id", userId);
 		} else {
 			sql.append("AND A.order_date>=:minDate AND A.order_date<=:maxDate ");
-			sql.append("ORDER BY A.id DESC;");
+			sql.append("ORDER BY A.id DESC,  F.order_item_id DESC;");
 			param = new MapSqlParameterSource().addValue("id", userId).addValue("minDate", minDate).addValue("maxDate",
 					maxDate);
 		}

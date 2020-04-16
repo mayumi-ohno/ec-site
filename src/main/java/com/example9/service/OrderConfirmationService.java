@@ -36,7 +36,6 @@ public class OrderConfirmationService {
 	 */
 	public List<Order> showOrderList(Integer userId) {
 		
-		//ShowCartListControllerのtoCartメソッドの部分と共通化すること(後で実施)
 		List<Order> orderList = orderRepository.findByUserIdAndStatus(userId, 0);
 
 		// 検索結果がなかったらnullを返す

@@ -1,12 +1,15 @@
 package com.example9.controller;
 
+import java.io.PrintWriter;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example9.domain.Order;
+import com.example9.domain.OrderItem;
+import com.example9.domain.OrderTopping;
 import com.example9.domain.User;
 import com.example9.form.SerchHistoryForm;
 import com.example9.service.ShowOrderHistoryService;
@@ -43,7 +48,7 @@ public class ShowOrderHistoryController {
 	}
 
 	/** 1ページに表示する注文履歴件数 */
-	private static final int VIEW_SIZE = 5;
+	private static final int VIEW_SIZE = 3;
 	/** 絞り込み条件の最小日付 */
 	public Date minDate = null;
 	/** 絞り込み条件の最大日付 */
@@ -69,7 +74,8 @@ public class ShowOrderHistoryController {
 		// -----日付絞り込み機能関連------------------------------------
 		complementDateForSearching(form); // 絞り込み日付を歯抜け入力した場合、数値補完をする
 		boolean checkDate = checkDateForSerching(form, model); // 入力値に不備がないか確認
-		if (!checkDate)	return "order_history"; // 不備ありの場合、一覧へ戻る
+		if (!checkDate)
+			return "order_history"; // 不備ありの場合、一覧へ戻る
 
 		// ページング番号からも検索できるよう、最大・最小日付を保存しておく
 		session.setAttribute("minYear", form.getMinYear());
@@ -125,6 +131,78 @@ public class ShowOrderHistoryController {
 		model.addAttribute(order);
 
 		return "order_history_detail";
+	}
+
+	/**
+	 * 注文履歴を.csvで出力する
+	 * 
+	 * @param response クライアントへのレスポンス
+	 */
+	@RequestMapping("/download")
+	public void csvDownload(HttpServletResponse response) {
+		LocalDateTime now = LocalDateTime.now();
+		response.addHeader("Content-Disposition", "attachment; filename=\"order_histories(" + now + ").csv\"");
+		response.setContentType("text/csv; charset=utf-8");
+
+		try (PrintWriter pw = response.getWriter()) {
+			String header = "order_number,delivery_name,delivery_email,delivery_zip_code,delivery_address,delivery_tel,order_item_name,order_item_price,topping_price,order_item_quantity,order_item_subtotal,order_totalprice,order_status\r\n";
+			pw.print(header);
+
+			// セッションスコープからユーザーID取得
+			User user = (User) session.getAttribute("user");
+			Integer userId = user.getId();
+			List<Order> orderList = showOrderHistoryService.getOrderHistoryList(userId, Date.valueOf("0000-01-01"),
+					Date.valueOf("9999-12-31"));
+			System.out.println("done");
+			orderList.forEach(order -> {
+				String orderNum = String.valueOf(order.getId());
+				String deliveryName = order.getDestinationName();
+				String deliveryEmail = order.getDestinationEmail();
+				String deliveryZipcode = order.getDestinationZipcode();
+				String deliveryAddress = order.getDestinationAddress();
+				String deliveryTel = order.getDestinationTel();
+				String orderTotalPrice = String.valueOf(order.getTotalPrice());
+				String orderStatus = String.valueOf(order.getStatus());
+				List<OrderItem> orderItemList = order.getOrderItemList();
+
+				orderItemList.forEach(orderItem -> {
+					String orderItemName = orderItem.getItem().getName();
+					String orderItemPrice;
+					if (orderItem.getSize() == 'M') {
+						orderItemPrice = String.valueOf(orderItem.getItem().getPriceM());
+					} else {
+						orderItemPrice = String.valueOf(orderItem.getItem().getPriceL());
+					}
+
+					List<OrderTopping> orderToppingList = orderItem.getOrderToppingList();
+					Integer orderToppingSize = 0;
+					if (orderToppingList != null) {
+						orderToppingSize = orderToppingList.size();
+					}
+
+					String toppingPrice = "0";
+					if (orderToppingSize != 0 && orderItem.getSize() == 'M') {
+						toppingPrice = String
+								.valueOf(orderToppingList.get(0).getTopping().getPriceM() * orderToppingSize);
+					} else if (orderToppingSize != 0 && orderItem.getSize() == 'L') {
+						toppingPrice = String
+								.valueOf(orderToppingList.get(0).getTopping().getPriceL() * orderToppingSize);
+					}
+
+					String orderItemQuantity = String.valueOf(orderItem.getQuantity());
+					String orderItemSubtoal = String.valueOf(orderItem.getSubTotal());
+					String data = orderNum + "," + deliveryName + "," + deliveryEmail + "," + deliveryZipcode + ","
+							+ deliveryAddress + "," + deliveryTel + "," + orderItemName + "," + orderItemPrice + ","
+							+ toppingPrice + "," + orderItemQuantity + "," + orderItemSubtoal + "," + orderTotalPrice
+							+ "," + orderStatus + "\r\n";
+					pw.print(data);
+				});
+
+			});
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+
+		}
 	}
 
 	/**
