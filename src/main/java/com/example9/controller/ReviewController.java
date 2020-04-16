@@ -96,7 +96,7 @@ public class ReviewController {
 	 * @return 口コミ投稿フォーム画面
 	 */
 	@RequestMapping("/form")
-	public String toFormPage(Integer orderId, Integer orderItemId, Integer itemId, Model model) {
+	public String toFormPage(Long orderId, Integer orderItemId, Integer itemId, Model model) {
 		Item item = showItemDetailService.getAnItem(itemId);
 		model.addAttribute("item", item);
 
@@ -136,7 +136,7 @@ public class ReviewController {
 
 		// フォームへの入力内容をもとに口コミオブジェクトを作成
 		Review review = new Review();
-		review.setOrderId(Integer.parseInt(form.getOrderId()));
+		review.setOrderId(Long.valueOf(form.getOrderId()));
 		User user = (User) session.getAttribute("user");
 		review.setUserId(user.getId());
 		review.setAuthorName(form.getAuthorName());
@@ -144,7 +144,7 @@ public class ReviewController {
 		review.setEvaluation(Integer.parseInt(form.getEvaluation()));
 		review.setReview(form.getReview());
 		review.setItemId(Integer.parseInt(form.getItemId()));
-		
+
 		reviewService.postReview(review);
 		flash.addFlashAttribute("itemId", form.getItemId());
 		return "redirect:/review/posted";

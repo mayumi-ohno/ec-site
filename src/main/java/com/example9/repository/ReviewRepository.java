@@ -28,7 +28,7 @@ public class ReviewRepository {
 	private RowMapper<Review> ROW_MAPPER = (rs, i) -> {
 		Review review = new Review();
 		review.setReviewId(rs.getInt("id"));
-		review.setOrderId(rs.getInt("order_id"));
+		review.setOrderId(rs.getLong("order_id"));
 		review.setUserId(rs.getInt("user_id"));
 		review.setAuthorName(rs.getString("author_name"));
 		review.setOrderItemId(rs.getInt("order_item_id"));

@@ -13,7 +13,7 @@ public class Review {
 	/** 口コミID */
 	private Integer reviewId;
 	/** 注文ID */
-	private Integer orderId;
+	private Long orderId;
 	/** ユーザーID */
 	private Integer userId;
 	/** 投稿者名 */
@@ -43,11 +43,11 @@ public class Review {
 		this.reviewId = reviewId;
 	}
 
-	public Integer getOrderId() {
+	public Long getOrderId() {
 		return orderId;
 	}
 
-	public void setOrderId(Integer orderId) {
+	public void setOrderId(Long orderId) {
 		this.orderId = orderId;
 	}
 

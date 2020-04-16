@@ -14,7 +14,7 @@ public class OrderItem {
 	/** 商品id */
 	private Integer itemId;
 	/** 注文id */
-	private Integer orderId;
+	private Long orderId;
 	/** 数量 */
 	private Integer quantity;
 	/** サイズ */
@@ -50,11 +50,11 @@ public class OrderItem {
 		this.itemId = itemId;
 	}
 
-	public Integer getOrderId() {
+	public Long getOrderId() {
 		return orderId;
 	}
 
-	public void setOrderId(Integer orderId) {
+	public void setOrderId(Long orderId) {
 		this.orderId = orderId;
 	}
 
@@ -106,9 +106,9 @@ public class OrderItem {
 		int subTotalPrice = 0;
 
 		if (orderToppingList.size() == 0 && size == 'M') {
-			subTotalPrice = item.getPriceM()* quantity;
+			subTotalPrice = item.getPriceM() * quantity;
 		} else if (orderToppingList.size() == 0 && size == 'L') {
-			subTotalPrice = item.getPriceL()* quantity;
+			subTotalPrice = item.getPriceL() * quantity;
 		} else if (orderToppingList.size() != 0 && size == 'M') {
 			subTotalPrice = (item.getPriceM()
 					+ orderToppingList.get(0).getTopping().getPriceM() * orderToppingList.size()) * quantity;

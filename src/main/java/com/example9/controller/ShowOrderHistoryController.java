@@ -118,7 +118,7 @@ public class ShowOrderHistoryController {
 	 * @return 注文履歴詳細画面
 	 */
 	@RequestMapping("/detail")
-	public String showDetail(Model model, Integer orderId) {
+	public String showDetail(Model model, Long orderId) {
 		// 注文情報詳細の取得
 		List<Order> orderList = showOrderHistoryService.getOrderHistoryDetail(orderId);
 		Order order = orderList.get(0);

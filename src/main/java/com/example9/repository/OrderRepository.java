@@ -1,19 +1,16 @@
 package com.example9.repository;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import com.example9.domain.Item;
@@ -34,29 +31,20 @@ public class OrderRepository {
 	@Autowired
 	private NamedParameterJdbcTemplate template;
 
-	private SimpleJdbcInsert insert;
-
-	@PostConstruct
-	public void init() {
-		SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert((JdbcTemplate) template.getJdbcOperations());
-		SimpleJdbcInsert withTableName = simpleJdbcInsert.withTableName("orders");
-		insert = withTableName.usingGeneratedKeyColumns("id");
-	}
-
 	/** 注文情報のリストを作成 */
 	private ResultSetExtractor<List<Order>> RESULT_SET_EXTRACTOR = (rs) -> {
 		List<Order> orderList = new ArrayList<>();
 		List<OrderItem> orderItemList;
 		List<OrderTopping> orderToppingList;
 
-		Integer orderIdOneBefore = 0;
+		Long orderIdOneBefore = Long.valueOf(0);
 		Integer orderItemIdOneBefore = 0;
 		while (rs.next()) {
 
-			if (rs.getInt("order_id") != orderIdOneBefore) {
+			if (rs.getLong("order_id") != orderIdOneBefore) {
 				// 注文情報の作成
 				Order order = new Order();
-				order.setId(rs.getInt("order_id"));
+				order.setId(rs.getLong("order_id"));
 				order.setUserId(rs.getInt("user_id"));
 				order.setStatus(rs.getInt("status"));
 				order.setTotalPrice(rs.getInt("total_price"));
@@ -73,7 +61,7 @@ public class OrderRepository {
 				// 注文を注文リストに追加
 				orderList.add(order);
 				// 参照済み注文のIDを変数に格納
-				orderIdOneBefore = rs.getInt("order_id");
+				orderIdOneBefore = rs.getLong("order_id");
 			}
 
 			if (rs.getInt("order_item_id") != orderItemIdOneBefore) {
@@ -81,7 +69,7 @@ public class OrderRepository {
 				OrderItem orderItem = new OrderItem();
 				orderItem.setId(rs.getInt("order_item_id"));
 				orderItem.setItemId(rs.getInt("item_id"));
-				orderItem.setOrderId(rs.getInt("order_id"));
+				orderItem.setOrderId(rs.getLong("order_id"));
 				orderItem.setQuantity(rs.getInt("quantity"));
 				String size = rs.getString("size");
 				orderItem.setSize(size.toCharArray()[0]);
@@ -225,7 +213,7 @@ public class OrderRepository {
 	 * @param orderId 注文ID
 	 * @return 注文情報
 	 */
-	public List<Order> findByOrderId(Integer orderId) {
+	public List<Order> findByOrderId(Long orderId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT A.id AS order_id, A.user_id, A.status, A.total_price, A.order_date, A.destination_name, ");
 		sql.append(
@@ -259,19 +247,38 @@ public class OrderRepository {
 	 * @return
 	 */
 	public Order insertOrder(Order order) {
-		SqlParameterSource param = new BeanPropertySqlParameterSource(order);
 
-		if (order.getId() == null) {
-			Number key = insert.executeAndReturnKey(param);
-			order.setId(key.intValue());
-		} else {
-			String sql = "INSERT INTO orders "
-					+ "(user_id, status, total_price, order_date, destination_name, destination_email, "
-					+ "destination_zipcode, destination_address, destination_tel, delivery_time, payment_method) "
-					+ "VALUES (:userId, :status, :totalPrice, :orderDate, :destinationName, :destinationEmail, "
-					+ ":destinationZipcode, :destinationAddress, :destinationTel, :deliveryTime, :paymentMethod) ";
-			template.update(sql, param);
-		}
+		StringBuilder sql = new StringBuilder();
+		LocalDate today = LocalDate.now();
+		Integer thisYear = today.getYear();
+		sql.append("WITH new_year_seq AS ( ");
+		sql.append("INSERT INTO orders ");
+		sql.append("(id, user_id, status, total_price, order_date, destination_name, destination_email, ");
+		sql.append("destination_zipcode, destination_address, destination_tel, delivery_time, payment_method) ");
+		sql.append(
+				"SELECT setval('seq_order', CAST(to_char(current_timestamp, 'YYYYMMDD')||'000001' AS bigint),false),");
+		sql.append(":userId, :status, :totalPrice, :orderDate, :destinationName, :destinationEmail, ");
+		sql.append(":destinationZipcode, :destinationAddress, :destinationTel, :deliveryTime, :paymentMethod ");
+		sql.append("WHERE NOT EXISTS (SELECT id FROM orders WHERE substring(CAST(id AS text),1,4)='");
+		sql.append(thisYear);
+		sql.append("')) ");
+		sql.append("INSERT INTO orders ");
+		sql.append("(id, user_id, status, total_price, order_date, destination_name, destination_email, ");
+		sql.append("destination_zipcode, destination_address, destination_tel, delivery_time, payment_method) ");
+		sql.append("SELECT nextval('seq_order'), ");
+		sql.append(":userId, :status, :totalPrice, :orderDate, :destinationName, :destinationEmail, ");
+		sql.append(":destinationZipcode, :destinationAddress, :destinationTel, :deliveryTime, :paymentMethod ");
+		sql.append("WHERE EXISTS (SELECT id FROM orders WHERE substring(CAST(id AS text),1,4)='");
+		sql.append(thisYear);
+		sql.append("'); ");
+
+		SqlParameterSource param = new BeanPropertySqlParameterSource(order);
+		template.update(sql.toString(), param);
+
+		String sql2 = "SELECT id FROM orders WHERE user_id=:userId AND status=0;";
+		long orderId = template.queryForObject(sql2, param, long.class);
+		order.setId(orderId);
+
 		return order;
 	}
 
@@ -280,7 +287,7 @@ public class OrderRepository {
 	 * 
 	 * @param id 主キー
 	 */
-	public void deleteById(Integer id) {
+	public void deleteById(Long id) {
 		String sql = "DELETE FROM orders WHERE id = :id ";
 		SqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
 		template.update(sql, param);
@@ -340,7 +347,7 @@ public class OrderRepository {
 	 * 
 	 * @param id 主キー
 	 */
-	public void deleteOrderAndUpdateOrderItem(Integer id, Integer userId) {
+	public void deleteOrderAndUpdateOrderItem(Long id, Integer userId) {
 		String sql = "WITH deleted AS (DELETE FROM orders WHERE id = :id RETURNING id) "
 				+ "UPDATE order_items SET order_id = (SELECT id FROM orders WHERE user_id = :userId AND status = 0) "
 				+ "WHERE order_id IN (SELECT id FROM deleted) ;";

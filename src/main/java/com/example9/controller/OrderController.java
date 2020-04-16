@@ -37,7 +37,8 @@ public class OrderController {
 		// 不正な画面遷移で当パスに辿り着いた場合、エラーとする
 		String url = request.getHeader("REFERER");
 		if (!"http://localhost:8080/confirm".equals(url)
-				&& !"http://localhost:8080/confirm/orderAfterConfirm".equals(url)) {
+				&& !"http://localhost:8080/confirm/orderAfterConfirm".equals(url)
+				&& !"http://localhost:8080/login/after_login".equals(url)) {
 			return "/error/404";
 		}
 

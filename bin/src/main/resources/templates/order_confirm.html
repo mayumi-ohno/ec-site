@@ -25,15 +25,10 @@
 							class="icon-bar"></span> <span class="icon-bar"></span> <span
 							class="icon-bar"></span>
 					</button>
-						<form th:action="@{/sortShowList}" method="post">
-								<input type="hidden" name="pagingNumber" value="1">
-								<input type="hidden" name="code" value="">
-								<input type="hidden" name="sortConditionNumber" value="0"><br>
-								<input type="image"  alt="main log"  class="navbar-link"  th:src="@{/img_curry/header_logo.png}" height="35">
-							</form>
-<!-- 					<a class="navbar-brand" href="item_list.html" th:href="@{/}"> 企業ロゴ <img -->
-<!-- 						alt="main log" src="../static/img_curry/header_logo.png" th:src="@{/img_curry/header_logo.png}" height="35"> -->
-<!-- 					</a> -->
+						<a class="navbar-brand" href="item_list.html" th:href="@{/}"> 
+<!-- 					企業ロゴ  -->
+					<img alt="main log" src="../static/img_curry/header_logo.png" th:src="@{/img_curry/header_logo.png}" height="35">
+					</a>
 				</div>
 
 				<!-- Collect the nav links, forms, and other content for toggling -->
@@ -215,6 +210,7 @@
 								</td>
 								<td>
 									<input type="text" name="zipcode" th:field="*{zipcode}">&nbsp;&nbsp;<button type="button" id="search_address_again">住所検索</button>
+									<div style="color: red" th:errors="*{zipcode}"></div>
 								</td>
 							</tr>
 							<tr>
@@ -262,47 +258,47 @@
 											<div class="col-sm-12">
 												<label class="radio-inline">
 													<input type="radio"
-														name="deliveryHour" value="10:00:00" checked="checked">
+														name="deliveryHour" value="10:00:00" th:field="*{deliveryHour}" checked="checked">
 													10時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="deliveryHour" value="11:00:00">
+														name="deliveryHour" value="11:00:00" th:field="*{deliveryHour}">
 													11時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="deliveryHour" value="12:00:00">
+														name="deliveryHour" value="12:00:00" th:field="*{deliveryHour}">
 													12時
 												</label><br>
 												<label class="radio-inline">
 													<input type="radio"
-														name="deliveryHour" value="13:00:00">
+														name="deliveryHour" value="13:00:00" th:field="*{deliveryHour}">
 													13時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="deliveryHour" value="14:00:00">
+														name="deliveryHour" value="14:00:00" th:field="*{deliveryHour}">
 													14時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="deliveryHour" value="15:00:00">
+														name="deliveryHour" value="15:00:00" th:field="*{deliveryHour}">
 													15時
 												</label><br>
 												<label class="radio-inline">
 													<input type="radio"
-														name="deliveryHour" value="16:00:00">
+														name="deliveryHour" value="16:00:00" th:field="*{deliveryHour}">
 													16時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="deliveryHour" value="17:00:00">
+														name="deliveryHour" value="17:00:00" th:field="*{deliveryHour}">
 													17時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="deliveryHour" value="18:00:00">
+														name="deliveryHour" value="18:00:00" th:field="*{deliveryHour}">
 													18時
 												</label><br>
 											</div>
@@ -460,5 +456,7 @@
 		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="../static/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
 	<script src="../static/js/input_credit_card.js" th:src="@{/js/input_credit_card.js}"></script>
+	<script src="https://ajaxzip3.github.io/ajaxzip3.js" charset="UTF-8"></script>
+	<script src="../static/js/get_address.js" th:src="@{/js/get_address.js}"></script>
 </body>
 </html>

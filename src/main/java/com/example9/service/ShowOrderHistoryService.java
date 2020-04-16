@@ -41,7 +41,7 @@ public class ShowOrderHistoryService {
 	 * @param orderId 注文ID
 	 * @return 注文履歴詳細
 	 */
-	public List<Order> getOrderHistoryDetail(Integer orderId) {
+	public List<Order> getOrderHistoryDetail(Long orderId) {
 		return orderRepository.findByOrderId(orderId);
 	}
 
