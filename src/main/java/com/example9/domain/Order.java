@@ -13,6 +13,8 @@ import java.util.List;
 public class Order {
 	/** 主キー */
 	private Long id;
+	/** WebAPI呼び出し用注文番号 */
+	private String order_number;
 	/** ユーザid */
 	private Integer userId;
 	/** 状態 */
@@ -152,13 +154,22 @@ public class Order {
 		this.orderItemList = orderItemList;
 	}
 
+	public String getOrder_number() {
+		return order_number;
+	}
+
+	public void setOrder_number(String order_number) {
+		this.order_number = order_number;
+	}
+
 	@Override
 	public String toString() {
-		return "Order [id=" + id + ", userId=" + userId + ", status=" + status + ", totalPrice=" + totalPrice
-				+ ", orderDate=" + orderDate + ", destinationName=" + destinationName + ", destinationEmail="
-				+ destinationEmail + ", destinationZipcode=" + destinationZipcode + ", destinationAddress="
-				+ destinationAddress + ", destinationTel=" + destinationTel + ", deliveryTime=" + deliveryTime
-				+ ", paymentMethod=" + paymentMethod + ", user=" + user + ", orderItemList=" + orderItemList + "]";
+		return "Order [id=" + id + ", order_number=" + order_number + ", userId=" + userId + ", status=" + status
+				+ ", totalPrice=" + totalPrice + ", orderDate=" + orderDate + ", destinationName=" + destinationName
+				+ ", destinationEmail=" + destinationEmail + ", destinationZipcode=" + destinationZipcode
+				+ ", destinationAddress=" + destinationAddress + ", destinationTel=" + destinationTel
+				+ ", deliveryTime=" + deliveryTime + ", paymentMethod=" + paymentMethod + ", user=" + user
+				+ ", orderItemList=" + orderItemList + "]";
 	}
 
 	/**

@@ -17,10 +17,10 @@ import com.example9.form.OrderForm;
 public class CheckCreditCardService {
 
 	@Autowired
-	RestTemplate restTemplate;
+	private RestTemplate restTemplate;
 
 	/** WebApiのwarファイルデプロイ先URL */
-	private static final String URL = "http://192.168.16.104:8080/sample-credit-card-web-api/credit-card/payment";
+	private static final String URL = "http://192.168.2.105:8080/credit-card-api/credit-card/payment";
 
 	/**
 	 * クレジットカード情報の確認.

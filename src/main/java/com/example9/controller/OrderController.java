@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example9.service.OrderService;
-import com.example9.service.SendMailService;
 
 /**
  * 注文処理をするコントローラ.
@@ -21,9 +20,6 @@ public class OrderController {
 
 	@Autowired
 	private OrderService orderService;
-
-	@Autowired
-	private SendMailService sendMailService;
 
 	/**
 	 * 注文する.
@@ -42,11 +38,15 @@ public class OrderController {
 			return "/error/404";
 		}
 
-		// メールを送信
-		sendMailService.sendMail();
-
 		// 注文する
-		orderService.doOrder();
+		try {
+			orderService.doOrder();
+		} catch (Exception e) {
+			boolean orderCanceled = orderService.cancelOrder();
+			if (orderCanceled) {
+				System.out.println("キャンセルしました");
+			}
+		}
 		return "redirect:/order/order-finished";
 	}
 

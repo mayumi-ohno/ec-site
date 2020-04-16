@@ -302,7 +302,10 @@ public class OrderRepository {
 		String sql = "UPDATE orders SET status=:status WHERE id=:orderId;";
 		SqlParameterSource param;
 		int paymentMethod = order.getPaymentMethod();
-		if (paymentMethod == 1) {
+		if (order.getOrder_number() != null) {
+			// キャンセル処理の場合はステータスをキャンセル(9)へ更新
+			param = new MapSqlParameterSource().addValue("status", 9).addValue("orderId", order.getId());
+		} else if (paymentMethod == 1) {
 			// 決済方法が代金引換（paymentMethod=1）の場合はステータスを注文前(0)→未入金(1)へ更新
 			param = new MapSqlParameterSource().addValue("status", 1).addValue("orderId", order.getId());
 		} else {
