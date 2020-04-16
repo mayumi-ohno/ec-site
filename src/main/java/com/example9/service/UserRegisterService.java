@@ -26,25 +26,36 @@ public class UserRegisterService {
 	public void insert(User user) {
 		userRepository.insert(user);
 	}
-	
+
 	/**
 	 * メールアドレスの検索する.
-	 * @param email　メールアドレス
+	 * 
+	 * @param email メールアドレス
 	 * @return ユーザ情報
 	 */
 	public User checkEmail(String email) {
 		User user = userRepository.findByEmail(email);
 		return user;
 	}
-	
+
 	/**
 	 * 主キーでユーザ情報を検索.
+	 * 
 	 * @param id ユーザID
 	 * @return ユーザ情報
 	 */
 	public User showUser(Integer id) {
 		User user = userRepository.load(id);
 		return user;
+	}
+
+	/**
+	 * ユーザー情報の変更.
+	 * 
+	 * @param user ユーザー情報
+	 */
+	public void changeUserInfo(User user) {
+		userRepository.Update(user);
 	}
 
 }

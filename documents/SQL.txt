@@ -125,6 +125,7 @@ create table order_toppings (
   , order_item_id integer not null
 ) ;
 
+----ここからオリジナル
 -- 口コミ
 drop table if exists reviews cascade;
 
@@ -146,3 +147,12 @@ create table reviews (
  ALTER TABLE orders ALTER COLUMN id TYPE bigint;
  ALTER TABLE order_items ALTER COLUMN order_id TYPE bigint;
  ALTER TABLE reviews ALTER COLUMN order_id TYPE bigint;
+
+ -- ユーザーアイコン（画像）
+drop table if exists user_images cascade;
+
+create table user_images (
+ id serial primary key
+ , user_id integer not null
+ , image text not null
+) ;
