@@ -83,6 +83,7 @@
 			<div
 				class="table-responsive col-lg-offset-1 col-lg-10 col-md-offset-1 col-md-10 col-sm-10 col-xs-12">
 				<h3 class="text-center">注文履歴</h3>
+				<button class="form-control btn btn-warning btn-block">注文履歴DL</button><br>
 				<table class="table table-striped">
 					<tbody>
 						<tr>
@@ -159,16 +160,31 @@
 						<td colspan="6">
 							<div class="text-center">
 							<div th:text="'現在：'+${session.pageNum}+'ページ目'"></div>
-							<form th:action="@{/order-history}" method="post" th:each="pageNumber:${pageNumbers}" style="display: inline">
-								<input type="hidden" name="page" th:value="${pageNumber}">
-								<input type="hidden" name="minYear" th:value="${session.minYear}">
-								<input type="hidden" name="minMonth" th:value="${session.minMonth}">
-								<input type="hidden" name="minDay" th:value="${session.minDay}">
-								<input type="hidden" name="maxYear" th:value="${session.maxYear}">
-								<input type="hidden" name="maxMonth" th:value="${session.maxMonth}">
-								<input type="hidden" name="maxDay" th:value="${session.maxDay}">
-								<button th:text="'&nbsp;'+${pageNumber}+'&nbsp;'">1</button>
+							<div  th:each="pageNumber:${pageNumbers}" style="display:inline" th:if="${pageNumbers.size()>=10}">
+								<span th:unless="${pageNumber == pageNumbers.size() || pageNumber ==1|| (pageNumber>=session.pageNum-1 && pageNumber<=session.pageNum+2 ) }">..</span>
+								<form th:action="@{/order-history}" method="post" style="display: inline" th:if="${pageNumber == pageNumbers.size() || pageNumber ==1|| (pageNumber>=session.pageNum-1 && pageNumber<=session.pageNum+2 ) }">
+									<input type="hidden" name="page" th:value="${pageNumber}">
+									<input type="hidden" name="minYear" th:value="${session.minYear}">
+									<input type="hidden" name="minMonth" th:value="${session.minMonth}">
+									<input type="hidden" name="minDay" th:value="${session.minDay}">
+									<input type="hidden" name="maxYear" th:value="${session.maxYear}">
+									<input type="hidden" name="maxMonth" th:value="${session.maxMonth}">
+									<input type="hidden" name="maxDay" th:value="${session.maxDay}">
+									<button th:text="'&nbsp;'+${pageNumber}+'&nbsp;'">1</button>
 							</form>
+							</div>
+							<div style="display:inline" th:if="${pageNumbers.size()<10}"  th:each="pageNumber:${pageNumbers}">
+								<form th:action="@{/order-history}" method="post" style="display: inline">
+									<input type="hidden" name="page" th:value="${pageNumber}">
+									<input type="hidden" name="minYear" th:value="${session.minYear}">
+									<input type="hidden" name="minMonth" th:value="${session.minMonth}">
+									<input type="hidden" name="minDay" th:value="${session.minDay}">
+									<input type="hidden" name="maxYear" th:value="${session.maxYear}">
+									<input type="hidden" name="maxMonth" th:value="${session.maxMonth}">
+									<input type="hidden" name="maxDay" th:value="${session.maxDay}">
+									<button th:text="'&nbsp;'+${pageNumber}+'&nbsp;'">1</button>
+							</form>							
+							</div>
 							</div>
 						</td>
 						</tr>
