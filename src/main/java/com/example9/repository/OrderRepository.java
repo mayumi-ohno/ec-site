@@ -256,7 +256,7 @@ public class OrderRepository {
 		sql.append("(id, user_id, status, total_price, order_date, destination_name, destination_email, ");
 		sql.append("destination_zipcode, destination_address, destination_tel, delivery_time, payment_method) ");
 		sql.append(
-				"SELECT setval('seq_order', CAST(to_char(current_timestamp, 'YYYYMMDD')||'000001' AS bigint),false),");
+				"SELECT setval('seq_order', CAST(to_char(current_timestamp, 'YYYYMMDD')||'000001' AS bigint),true),");
 		sql.append(":userId, :status, :totalPrice, :orderDate, :destinationName, :destinationEmail, ");
 		sql.append(":destinationZipcode, :destinationAddress, :destinationTel, :deliveryTime, :paymentMethod ");
 		sql.append("WHERE NOT EXISTS (SELECT id FROM orders WHERE substring(CAST(id AS text),1,4)='");
