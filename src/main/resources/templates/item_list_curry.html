@@ -52,6 +52,7 @@ $( function() {
 						<a href="cart_list.html" th:href="@{/show_cart_list}" class="navbar-link">ショッピングカート</a>&nbsp;&nbsp;
 						<a href="order_history.html" th:if="${session.user}" th:text="'注文履歴'" th:href="@{/order-history}" class="navbar-link">注文履歴</a>&nbsp;&nbsp;
 						<a href="order_history.html" th:if="${session.user}" th:text="会員情報変更" th:href="@{/change-user}" class="navbar-link">会員情報変更</a>&nbsp;&nbsp;
+						<a href="order_history.html" th:if="${session.user}" th:text="売上管理" th:href="@{/chart}" class="navbar-link">売上管理</a>&nbsp;&nbsp;
 						<a href="login.html" class="navbar-link" th:unless="${session.user}" th:href="@{/login}" th:text="ログイン">ログイン</a>&nbsp;&nbsp;
 						<a href="item_list.html" class="navbar-link" th:if="${session.user}" th:href="@{/login/logout}" th:text="ログアウト">ログアウト</a>
 					</p>

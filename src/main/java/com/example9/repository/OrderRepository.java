@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -17,6 +18,7 @@ import com.example9.domain.Item;
 import com.example9.domain.Order;
 import com.example9.domain.OrderItem;
 import com.example9.domain.OrderTopping;
+import com.example9.domain.SalesPerformance;
 import com.example9.domain.Topping;
 
 /**
@@ -30,6 +32,15 @@ public class OrderRepository {
 
 	@Autowired
 	private NamedParameterJdbcTemplate template;
+
+	/** 売上実績の月別リストを作成 */
+	private static final RowMapper<SalesPerformance> ROW_MAPPER = (rs, i) -> {
+		SalesPerformance sales = new SalesPerformance();
+		sales.setYear(Integer.parseInt(rs.getString("year")));
+		sales.setMonth(Integer.parseInt(rs.getString("month")));
+		sales.setAmount(Integer.parseInt(rs.getString("amount")));
+		return sales;
+	};
 
 	/** 注文情報のリストを作成 */
 	private ResultSetExtractor<List<Order>> RESULT_SET_EXTRACTOR = (rs) -> {
@@ -356,6 +367,26 @@ public class OrderRepository {
 				+ "WHERE order_id IN (SELECT id FROM deleted) ;";
 		SqlParameterSource param = new MapSqlParameterSource().addValue("id", id).addValue("userId", userId);
 		template.update(sql, param);
+	}
+
+	/**
+	 * 年間の月別売上実績を取得する
+	 * 
+	 * @param year 年
+	 * @return 月別売上実績
+	 */
+	public List<SalesPerformance> getSalesPerformanceByYear(String year) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT A.year,A.month,SUM(total_price)AS amount FROM ");
+		sql.append("(SELECT substring(CAST(order_date AS text),1,4)AS year, ");
+		sql.append("substring(CAST(order_date AS text),6,2)AS month,total_price ");
+		sql.append("FROM orders)AS A ");
+		sql.append("WHERE A.year=:year ");
+		sql.append("GROUP BY A.year,A.month ");
+		sql.append("ORDER BY A.year,A.month;");
+		SqlParameterSource param = new MapSqlParameterSource().addValue("year", year);
+		List<SalesPerformance> salesPerfomances = template.query(sql.toString(), param, ROW_MAPPER);
+		return salesPerfomances;
 	}
 
 }
