@@ -145,7 +145,7 @@ public class OrderConfirmationController {
 			checkedCard = checkCreditCardService.checkCardInfo(form);
 		}
 		if ("error".equals(checkedCard.getStatus())) {
-			model.addAttribute("creditCard", "クレジットカード情報が不正です");
+			model.addAttribute("creditCard", checkedCard.getMessage());
 		}
 
 		Order updateOrder = new Order();

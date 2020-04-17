@@ -47,7 +47,7 @@ public class OrderService {
 	private RestTemplate restTemplate;
 
 	/** WebApiのwarファイルデプロイ先URL */
-	private static final String URL = "http://192.168.2.105:8080/credit-card-api/credit-card/cancel";
+	private static final String URL = "http://192.168.2.105:8080/credit-card-webapi/cancel";
 
 	@ModelAttribute
 	public OrderForm setUpOrderForm() {
@@ -175,8 +175,8 @@ public class OrderService {
 	public boolean cancelOrder() {
 		Integer userId = (Integer) session.getAttribute("userId");
 		Order order = orderRepository.findByUserIdAndStatus(userId, 0).get(0);
-//		String orderId = String.valueOf(order.getId());
-		order.setOrder_number("12345"); //動作確認が目的のため適当な数値を入れとく
+		String orderId = String.valueOf(order.getId());
+		order.setOrder_number(orderId);
 		CheckedCreditCard result = restTemplate.postForObject(URL, order, CheckedCreditCard.class);
 		if ("E-00".equals(result.getError_code())) {
 			// WebAPI呼び出し成功したら、注文をキャンセルする
