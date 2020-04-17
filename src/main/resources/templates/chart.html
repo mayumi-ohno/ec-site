@@ -40,7 +40,9 @@ var myChart = new Chart(ctx, {
                 ticks: {
                     beginAtZero:true,
                     callback: function(label, index, labels) {
-                        return label.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') +' 円';
+                    	 if (Math.floor(label) === label) {
+	                        return label.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') +' 円';
+                    	 }
                     }
                 }
             }]

@@ -386,6 +386,9 @@ public class OrderRepository {
 		sql.append("ORDER BY A.year,A.month;");
 		SqlParameterSource param = new MapSqlParameterSource().addValue("year", year);
 		List<SalesPerformance> salesPerfomances = template.query(sql.toString(), param, ROW_MAPPER);
+		if (salesPerfomances.isEmpty()) {
+			return null;
+		}
 		return salesPerfomances;
 	}
 

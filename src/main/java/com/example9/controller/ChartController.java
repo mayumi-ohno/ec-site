@@ -3,6 +3,7 @@ package com.example9.controller;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,18 +30,25 @@ public class ChartController {
 	public String index(String year, Model model) {
 
 		String thisYear = String.valueOf(LocalDate.now().getYear());
+		if (Objects.isNull(year) || year.isEmpty()) {
+			year = thisYear;
+		}
+		model.addAttribute("selectedYear", year);
+
+		// 過去５ヵ年の年数リストを作成（セレクトボックス用）
 		List<Integer> yearList = new ArrayList<>();
 		for (int i = (Integer.parseInt(thisYear) - 5); i <= Integer.parseInt(thisYear); i++) {
 			yearList.add(i);
 		}
 		model.addAttribute("yearList", yearList);
 
-		if (year == null || "".equals(year)) {
-			year = thisYear;
-		}
-		model.addAttribute("selectedYear", year);
-
 		List<SalesPerformance> salesPerformances = createChartService.getSalesPerformances(year);
+
+		// 当該年の売上無しの場合は、月別金額を1-12月すべて0円とする
+		if (Objects.isNull(salesPerformances)) {
+			model.addAttribute("amount", "0,0,0,0,0,0,0,0,0,0,0,0");
+			return "chart";
+		}
 
 		// グラフ作成用に月別金額を文字列として連結する
 		StringBuilder salesAmount = new StringBuilder();
