@@ -130,7 +130,7 @@ $( function() {
 							<th th:each="item:${itemList}">
 								<a href="item_detail.html" th:href="@{'/item-detail/?id=' + ${item.id}}">
 									<img src="../static/img_curry/1.jpg"
-										class="img-responsive img-rounded" width="200" height="600" th:src="${'/img_curry/' + item.imagePath}">
+										class="img-responsive img-rounded" width="200" height="600" th:src="@{/img_curry/} + ${item.imagePath}">
 								</a><br>
 								<a href="item_detail.html" th:href="@{'/item-detail/?id=' + ${item.id}}">
 								<span th:text="${item.name}">じゃがバターベーコン</span></a><br>

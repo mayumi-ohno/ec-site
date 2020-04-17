@@ -83,7 +83,7 @@
 						<tr th:each="orderItem : ${order.orderItemList}">
 							<td>
 								<div class="center">
-									<img src="../static/img_pizza/1.jpg" th:src="@{'/img_curry/' + ${orderItem.item.imagePath}}"
+									<img src="../static/img_pizza/1.jpg" th:src="@{/img_curry/}+ ${orderItem.item.imagePath}}"
 										class="img-responsive img-rounded" width="100" height="300"><br>
 									<span th:text="${orderItem.item.name}">じゃがバターベーコン</span>
 								</div>
