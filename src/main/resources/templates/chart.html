@@ -22,12 +22,11 @@ $( function() {
 var amount =  [ [(${amount})] ];
 var ctx = document.getElementById("myChart");
 var myChart = new Chart(ctx, {
-	scaleLabel: "<%=value%> 円",
     type: 'bar',
     data: {
         labels: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
         datasets: [{
-            label: '売上金額',
+            label:  [ [(${selectedYear})] ]+'年 売上金額',
             data: amount,
             backgroundColor: 'rgba(255, 206, 86, 0.2)',
             borderColor: 'rgba(255, 206, 86, 1)',
@@ -104,9 +103,7 @@ var myChart = new Chart(ctx, {
 	</select>	
 	<button>変更</button>
 </form>
-
-<h1><span th:text="${selectedYear}">2020</span>年 売上実績</h1>
-
+<br>
 <div  style="width:500px; height:500px">
 	<canvas id="myChart"></canvas>
 </div>

@@ -118,6 +118,10 @@ $( function() {
 			<button>並び替える</button>
 		</font>
 		</form>
+	<div th:if="${accessHistory}">
+		最近見た商品：
+		<a th:each="item:${accessHistory}" href="item_detail.html" th:href="@{'/item-detail/?id=' + ${item.id}}" th:text="${item.name}+'　'"></a>
+	</div>	
 	</div>
 	<br>
 	

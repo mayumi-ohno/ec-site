@@ -56,7 +56,7 @@ class ExConfig extends WebSecurityConfigurerAdapter {
 				.logout() 
 					.logoutRequestMatcher(new AntPathRequestMatcher("/login/logout")) //ログアウト処理をするパス
 					.logoutSuccessUrl("/") //ログアウト成功時に遷移させるパス
-//                .deleteCookies("JSESSIONID")
+					.deleteCookies("JSESSIONID")
 					.invalidateHttpSession(true).permitAll();
 		//　デフォルトの設定ではログイン前後でセッションIDが変わってしまうので、それを無効にする
 		http.sessionManagement().sessionFixation().none();

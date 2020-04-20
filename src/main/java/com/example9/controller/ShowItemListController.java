@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +69,7 @@ public class ShowItemListController {
 	 * @return 商品一覧画面
 	 */
 	@RequestMapping("")
-	public String showList(String code, Model model, Integer pagingNumber) {
+	public String showList(String code, Model model, Integer pagingNumber, HttpServletRequest request) {
 
 		// 企業ロゴをクリックして当パスに遷移してきた場合
 		// セッション内のページ番号、検索・ソート条件をクリアする
@@ -119,6 +122,30 @@ public class ShowItemListController {
 		// 商品詳細画面から一覧画面に戻る際、元のページに戻れるよう、ページ番号・検索条件を保存しておく
 		session.setAttribute("pageNum", pagingNumber);
 		session.setAttribute("code", code);
+
+		// cookieに保存されている閲覧済商品IDを取得する
+		Cookie[] cookies = request.getCookies();
+		String itemIdHistory = "";
+		if (!Objects.isNull(cookies)) {
+			for (Cookie cookie : cookies) {
+				if ("item-id".equals(cookie.getName())) {
+					itemIdHistory = cookie.getValue();
+					break;
+				}
+			}
+		}
+		if (!Objects.isNull(cookies)) {
+			String[] itemIdList = itemIdHistory.split("and");
+			List<Item> accessHistory = new ArrayList<>();
+			showItemListService.showList().forEach(item -> {
+				for (String itemId : itemIdList) {
+					if (String.valueOf(item.getId()).equals(itemId)) {
+						accessHistory.add(item);
+					}
+				}
+			});
+			model.addAttribute("accessHistory", accessHistory);
+		}
 		return "item_list_curry";
 	}
 

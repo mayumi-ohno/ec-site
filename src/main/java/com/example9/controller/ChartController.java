@@ -26,6 +26,13 @@ public class ChartController {
 	@Autowired
 	private CreateChartService createChartService;
 
+	/**
+	 * グラフを表示する.
+	 * 
+	 * @param year  表示年度
+	 * @param model リクエストスコープ
+	 * @return グラフ表示画面
+	 */
 	@RequestMapping("")
 	public String index(String year, Model model) {
 
@@ -55,7 +62,7 @@ public class ChartController {
 		int nextMonthOfList = salesPerformances.get(0).getMonth();
 		for (int loopCount = 1, index = 0; loopCount <= 12; loopCount++) {
 
-			if (index < salesPerformances.size() && nextMonthOfList == loopCount) {
+			if (nextMonthOfList == loopCount) {
 				salesAmount.append(salesPerformances.get(index).getAmount() + ",");
 				index++;
 			} else {
